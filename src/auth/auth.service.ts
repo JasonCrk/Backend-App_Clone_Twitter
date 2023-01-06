@@ -6,6 +6,8 @@ import { UsersService } from 'src/users/users.service'
 import { createUserDto } from 'src/users/dto/users.dto'
 import { UserEntity } from 'src/users/interface/User'
 
+import { AccountService } from 'src/account/account.service'
+
 import { comparePasswords } from 'src/auth/helpers'
 import { signInDataDto } from './dto/signInDataDto.dto'
 
@@ -16,6 +18,7 @@ import { Payload } from './interfaces/Payload'
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private accountService: AccountService,
     private jwtService: JwtService
   ) {}
 
@@ -50,6 +53,13 @@ export class AuthService {
       email,
       firstName,
       lastName,
+    }
+  }
+
+  async login(user: User): Promise<{ accessToken: string }> {
+    const payload: Payload = { username: user.username, userId: user.id }
+    return {
+      accessToken: this.jwtService.sign(payload),
     }
   }
 
@@ -102,6 +112,17 @@ export class AuthService {
         HttpStatus.INTERNAL_SERVER_ERROR
       )
 
+    const account = await this.accountService.createAccount({ user })
+
+    if (!account)
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Hubo un error en el servidor, no se puedo crear la cuenta',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      )
+
     const { id, username, firstName, lastName, email } = user
     return {
       user: {
@@ -111,13 +132,6 @@ export class AuthService {
         lastName,
         email,
       },
-    }
-  }
-
-  async login(user: User): Promise<{ accessToken: string }> {
-    const payload: Payload = { username: user.username, userId: user.id }
-    return {
-      accessToken: this.jwtService.sign(payload),
     }
   }
 }
