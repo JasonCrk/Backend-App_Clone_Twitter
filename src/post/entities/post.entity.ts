@@ -11,6 +11,7 @@ import {
 import { User } from 'src/users/users.entity'
 import { ImagePost } from './imagePost.entity'
 import { VideoPost } from './videoPost.entity'
+import { GifPost } from './gifPost.entity'
 
 @Entity({ name: 'post' })
 export class Post {
@@ -34,6 +35,9 @@ export class Post {
 
   @OneToMany(() => VideoPost, video => video.post)
   videos: VideoPost[]
+
+  @OneToMany(() => GifPost, gif => gif.post)
+  gifs: GifPost[]
 
   @CreateDateColumn()
   created_at: Date
