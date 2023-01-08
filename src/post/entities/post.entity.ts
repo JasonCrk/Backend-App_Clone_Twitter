@@ -9,6 +9,7 @@ import {
 } from 'typeorm'
 
 import { User } from 'src/users/users.entity'
+import { ImagePost } from './imagePost.entity'
 
 @Entity({ name: 'post' })
 export class Post {
@@ -26,6 +27,9 @@ export class Post {
 
   @OneToMany(() => Post, post => post.mention)
   postMentions: Post[]
+
+  @OneToMany(() => ImagePost, image => image.post)
+  images: ImagePost[]
 
   @CreateDateColumn()
   created_at: Date
