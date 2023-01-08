@@ -4,6 +4,8 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm'
 
 import { User } from 'src/users/users.entity'
@@ -17,30 +19,37 @@ export class Account {
   @JoinColumn()
   user: User
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: 'https://pbs.twimg.com/media/FgqBU4yWYAAPZ6-.png',
+  })
   avatar: string
 
-  @Column()
+  @Column({
+    nullable: true,
+    default:
+      'https://images.wondershare.com/repairit/aticle/2021/08/twitter-header-photo-issues-1.jpg',
+  })
   header: string
 
-  @Column()
+  @Column({ nullable: true })
   website: string
 
-  @Column()
+  @Column({ nullable: true })
   bibliography: string
 
-  @Column()
+  @Column({ nullable: true })
   location: string
 
-  @Column()
+  @Column({ default: false })
   verify: boolean
 
-  @Column()
+  @Column({ nullable: true })
   birthday: Date
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date
 }
