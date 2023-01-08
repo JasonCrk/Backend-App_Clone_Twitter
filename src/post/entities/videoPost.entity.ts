@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 import { Post } from './post.entity'
 
-@Entity()
+@Entity({ name: 'video_post' })
 export class VideoPost {
   @PrimaryGeneratedColumn('uuid')
   id: string
