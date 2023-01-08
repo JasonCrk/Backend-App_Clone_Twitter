@@ -13,6 +13,7 @@ import { Account } from './account/entities/account.entity'
 import { Post } from './post/entities/post.entity'
 import { ImagePost } from './post/entities/imagePost.entity'
 import { VideoPost } from './post/entities/videoPost.entity'
+import { GifPost } from './post/entities/gifPost.entity'
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { VideoPost } from './post/entities/videoPost.entity'
       username: 'postgres',
       password: 'jason:postgres',
       database: 'api_twitter',
-      entities: [User, Account, Post, ImagePost, VideoPost],
+      entities: [User, Account, Post, ImagePost, VideoPost, GifPost],
       synchronize: true,
     }),
     UsersModule,
