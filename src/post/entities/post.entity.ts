@@ -4,11 +4,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm'
 
 import { User } from 'src/users/users.entity'
 
-@Entity()
+@Entity({ name: 'post' })
 export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -25,9 +27,9 @@ export class Post {
   @OneToMany(() => Post, post => post.mention)
   postMentions: Post[]
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date
 }
