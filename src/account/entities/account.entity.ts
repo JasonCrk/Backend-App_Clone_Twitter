@@ -1,23 +1,19 @@
+import { User } from 'src/users/users.entity'
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
-
-import { User } from 'src/users/users.entity'
 
 @Entity({ name: 'account' })
 export class Account {
   @PrimaryGeneratedColumn('uuid')
   id: string
-
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User
 
   @Column({
     nullable: true,
@@ -31,6 +27,13 @@ export class Account {
       'https://images.wondershare.com/repairit/aticle/2021/08/twitter-header-photo-issues-1.jpg',
   })
   header: string
+
+  @OneToOne(() => User, user => user.account)
+  user: User
+
+  @ManyToMany(() => User, user => user.followers)
+  @JoinTable()
+  followings: User[]
 
   @Column({ nullable: true })
   website: string

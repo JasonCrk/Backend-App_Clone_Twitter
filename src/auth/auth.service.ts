@@ -1,31 +1,27 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
-import { User } from 'src/users/users.entity'
 import { UsersService } from 'src/users/users.service'
 import { createUserDto } from 'src/users/dto/users.dto'
 import { UserEntity } from 'src/users/interface/User'
 
-import { AccountService } from 'src/account/account.service'
-
 import { comparePasswords } from 'src/auth/helpers'
 import { signInDataDto } from './dto/signInDataDto.dto'
 
-import { SignIn } from './interfaces/signIn'
 import { Payload } from './interfaces/Payload'
+import { User } from 'src/users/users.entity'
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private accountService: AccountService,
     private jwtService: JwtService
   ) {}
 
-  async validateUser({
-    email,
-    password,
-  }: SignIn): Promise<Omit<UserEntity, 'password'>> {
+  async validateUser(
+    email: string,
+    password: string
+  ): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.usersService.findOneByEmail(email)
     if (!user)
       throw new HttpException(
@@ -56,7 +52,9 @@ export class AuthService {
     }
   }
 
-  async login(user: User): Promise<{ accessToken: string }> {
+  async login(
+    user: Omit<UserEntity, 'password'>
+  ): Promise<{ accessToken: string }> {
     const payload: Payload = { username: user.username, userId: user.id }
     return {
       accessToken: this.jwtService.sign(payload),
@@ -112,18 +110,8 @@ export class AuthService {
         HttpStatus.INTERNAL_SERVER_ERROR
       )
 
-    const account = await this.accountService.createAccount({ user })
-
-    if (!account)
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Hubo un error en el servidor, no se puedo crear la cuenta',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR
-      )
-
     const { id, username, firstName, lastName, email } = user
+
     return {
       user: {
         id,
@@ -133,5 +121,34 @@ export class AuthService {
         email,
       },
     }
+  }
+
+  async getUserById(userId: string): Promise<{ user: User }> {
+    const user = await this.usersService.findOne(userId, {
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        account: {
+          avatar: true,
+        },
+      },
+      relations: {
+        account: true,
+      },
+    })
+
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: '',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    return { user }
   }
 }

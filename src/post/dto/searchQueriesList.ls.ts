@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsOptional } from 'class-validator'
 
-export class createPostDto {
+export class searchQueriesList {
   @IsNotEmpty()
-  content: string
+  query: string
 
   @IsOptional()
-  mentionPost: string
+  find: string // undefined, live or user
 }

@@ -1,21 +1,35 @@
+import { Express } from 'express'
+
 import {
   Controller,
   Param,
   Get,
   Post,
   Request,
-  HttpException,
-  HttpStatus,
   UseGuards,
   Body,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
+  Delete,
 } from '@nestjs/common'
 
+import { ParseUUIDPipe, ParseIntPipe } from '@nestjs/common/pipes'
+
+import { FilesInterceptor } from '@nestjs/platform-express'
+
 import { JwtAuthGuard } from 'src/auth/jwt-auth.strategy'
+import { Payload } from 'src/auth/interfaces/Payload'
 
 import { Post as PostEntity } from './entities/post.entity'
 import { PostService } from './post.service'
 
+import { Account } from 'src/account/entities/account.entity'
+
 import { createPostDto } from './dto/createPostDto.dto'
+import { likePostDto } from './dto/likePostDto.dto'
+import { searchQueriesList } from './dto/searchQueriesList.ls'
+import { trendsQueriesList } from './dto/trendsQueriesList.ls'
 
 @Controller('api/posts')
 export class PostController {
@@ -23,50 +37,69 @@ export class PostController {
 
   @Get()
   async getAllPosts(): Promise<{ posts: PostEntity[] }> {
-    const posts = await this.postService.findAllPosts()
-    return { posts }
+    return await this.postService.findAllPosts()
+  }
+
+  @Get('search')
+  async searchPosts(
+    @Query() queries: searchQueriesList
+  ): Promise<{ data: PostEntity[] | Account[] }> {
+    return await this.postService.searchPosts(queries)
+  }
+
+  @Get('trends')
+  async trendsPosts(@Query() queries: trendsQueriesList): Promise<{
+    trends: Array<{ hashtag: string; countTweets: number }>
+  }> {
+    return await this.postService.trendingsPosts(queries.limit)
   }
 
   @Get(':postId')
   async getPost(
-    @Param('postId') postId: string
+    @Param('postId', new ParseUUIDPipe()) postId: string
   ): Promise<{ post: PostEntity }> {
-    const post = await this.postService.findPostById(postId)
-    if (!post)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: '',
-        },
-        HttpStatus.NOT_FOUND
-      )
-
-    return { post }
+    return await this.postService.findPostById(postId)
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('images'))
   @Post()
   async createPost(
-    @Body() { content, mentionPostId }: createPostDto,
-    @Request() req: any
+    @Body() postData: createPostDto,
+    @Request() req: { user: Payload },
+    @UploadedFiles() images: Array<Express.Multer.File>
+  ): Promise<{ message: string }> {
+    return await this.postService.createPost(postData, req.user.userId, images)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':postId')
+  async deletePost(
+    @Param('postId', new ParseUUIDPipe()) postId: string
+  ): Promise<{ message: string }> {
+    return await this.postService.deletePost(postId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('like')
+  async likePost(
+    @Request() req: { user: Payload },
+    @Body() post: likePostDto
   ): Promise<{ post: PostEntity }> {
-    const newPost = await this.postService.createPost({
-      content,
-      mentionPostId,
-      userId: req.user.userId,
-    })
+    return await this.postService.likePost(req.user.userId, post.postId)
+  }
 
-    if (!newPost)
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'No se ha creado el Tweet',
-        },
-        HttpStatus.BAD_REQUEST
-      )
+  @Get('user/:username')
+  async getUserPosts(
+    @Param('username') username: string
+  ): Promise<{ posts: PostEntity[] }> {
+    return await this.postService.getUserPostsByUsername(username)
+  }
 
-    return {
-      post: newPost,
-    }
+  @Get('user/:username/liked')
+  async getLikedPosts(
+    @Param('username') username: string
+  ): Promise<{ posts: PostEntity[] }> {
+    return await this.postService.getLikedPostsByUsername(username)
   }
 }

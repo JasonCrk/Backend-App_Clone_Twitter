@@ -1,13 +1,12 @@
 import {
   Controller,
-  //  UseGuards,
   Get,
   Param,
-  HttpException,
-  HttpStatus,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common'
-
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.strategy'
 
 import { AccountService } from './account.service'
 
@@ -17,22 +16,25 @@ import { Account } from './entities/account.entity'
 export class AccountController {
   constructor(private accountService: AccountService) {}
 
-  @Get(':accountId')
-  async getProfile(
-    @Param('accountId') accountId: string
-  ): Promise<{ profile: Account }> {
-    const account = await this.accountService.findAccountById(accountId)
-    if (!account)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'La cuenta no existe',
-        },
-        HttpStatus.NOT_FOUND
-      )
+  @Get('most_followed')
+  async getMostFollowedUsers(
+    @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit: number
+  ): Promise<{ accounts: Account[] }> {
+    return await this.accountService.mostFollowedUsers(limit)
+  }
 
-    return {
-      profile: account,
-    }
+  @Get(':username')
+  async getProfile(
+    @Param('username') username: string
+  ): Promise<{ profile: Account }> {
+    return await this.accountService.getAccountByUsername(username)
+  }
+
+  @Get(':userId/followers')
+  async getUserFollowers(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Query('limit', ParseIntPipe) limit: number
+  ): Promise<{ accounts: Account[] }> {
+    return await this.accountService.userFollowers(userId, limit)
   }
 }

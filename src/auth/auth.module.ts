@@ -10,13 +10,12 @@ import { UsersModule } from 'src/users/users.module'
 
 import { JWTConstants } from './constants'
 
-import { JwtStrategy } from './local.strategy'
-import { AccountModule } from 'src/account/account.module'
+import { LocalStrategy } from './local.strategy'
+import { JwtStrategy } from './jwt.strategy'
 
 @Module({
   imports: [
     UsersModule,
-    AccountModule,
     PassportModule,
     JwtModule.register({
       secret: JWTConstants.secret,
@@ -24,7 +23,7 @@ import { AccountModule } from 'src/account/account.module'
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

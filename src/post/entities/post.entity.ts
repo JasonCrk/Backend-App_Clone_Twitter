@@ -6,12 +6,13 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
 
 import { User } from 'src/users/users.entity'
 import { ImagePost } from './imagePost.entity'
-import { VideoPost } from './videoPost.entity'
-import { GifPost } from './gifPost.entity'
+import { Comment } from 'src/comment/entities/comment.entity'
 
 @Entity({ name: 'post' })
 export class Post {
@@ -24,7 +25,14 @@ export class Post {
   @ManyToOne(() => User, user => user.posts)
   user: User
 
-  @ManyToOne(() => Post, post => post.postMentions)
+  @Column({
+    nullable: true,
+  })
+  hashtags: string
+
+  @ManyToOne(() => Post, post => post.postMentions, {
+    nullable: true,
+  })
   mention: Post
 
   @OneToMany(() => Post, post => post.mention)
@@ -33,15 +41,16 @@ export class Post {
   @OneToMany(() => ImagePost, image => image.post)
   images: ImagePost[]
 
-  @OneToMany(() => VideoPost, video => video.post)
-  videos: VideoPost[]
+  @ManyToMany(() => User, user => user.postsLiked)
+  @JoinTable()
+  likes: User[]
 
-  @OneToMany(() => GifPost, gif => gif.post)
-  gifs: GifPost[]
+  @OneToMany(() => Comment, comment => comment.post)
+  comments: Comment[]
 
   @CreateDateColumn()
-  created_at: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updated_at: Date
+  updatedAt: Date
 }
