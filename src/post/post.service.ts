@@ -179,17 +179,14 @@ export class PostService {
     }
   }
 
-  async trendingsPosts(limit: number | undefined): Promise<{
+  async trendingsPosts(limit: number): Promise<{
     trends: Array<{ hashtag: string; countTweets: number }>
   }> {
-    let findPostsOptions: FindManyOptions<Post> = {
+    const findPostsOptions: FindManyOptions<Post> = {
       select: {
         hashtags: true,
       },
-    }
-
-    if (limit) {
-      findPostsOptions = { ...findPostsOptions, take: limit }
+      take: limit,
     }
 
     const posts = await this.postRespository.find(findPostsOptions)
