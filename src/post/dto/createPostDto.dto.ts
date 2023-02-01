@@ -5,5 +5,8 @@ export class createPostDto {
   content: string
 
   @IsOptional()
+  hashtags: string
+
+  @IsOptional()
   mentionPost: string
 }
