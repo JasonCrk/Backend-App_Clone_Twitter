@@ -28,6 +28,7 @@ export class PostService {
     mention: {
       id: true,
       content: true,
+      hashtags: true,
       createdAt: true,
       updatedAt: true,
       likes: {
@@ -199,14 +200,17 @@ export class PostService {
 
         hashtags.forEach(hashtag => {
           const indexTrendPost = trendPosts.findIndex(
-            trendPost => trendPost.hashtag === hashtag
+            trendPost => trendPost.hashtag === hashtag.trim()
           )
 
-          if (indexTrendPost !== -1) {
-            trendPosts = [...trendPosts, { hashtag, countTweets: 1 }]
+          if (indexTrendPost === -1) {
+            trendPosts = [
+              ...trendPosts,
+              { hashtag: hashtag.trim(), countTweets: 1 },
+            ]
+          } else {
+            trendPosts[indexTrendPost].countTweets += 1
           }
-
-          trendPosts[indexTrendPost].countTweets += 1
         })
       }
     })
@@ -236,6 +240,10 @@ export class PostService {
 
     newPost.content = postData.content
     newPost.user = user
+
+    if (postData.hashtags) {
+      newPost.hashtags = postData.hashtags
+    }
 
     if (postData.mentionPost) {
       const mentionPost = await this.postRespository.findOneBy({
