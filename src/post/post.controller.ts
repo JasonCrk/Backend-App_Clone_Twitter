@@ -14,7 +14,7 @@ import {
   Delete,
 } from '@nestjs/common'
 
-import { ParseUUIDPipe, ParseIntPipe } from '@nestjs/common/pipes'
+import { ParseUUIDPipe } from '@nestjs/common/pipes'
 
 import { FilesInterceptor } from '@nestjs/platform-express'
 
@@ -51,7 +51,9 @@ export class PostController {
   async trendsPosts(@Query() queries: trendsQueriesList): Promise<{
     trends: Array<{ hashtag: string; countTweets: number }>
   }> {
-    return await this.postService.trendingsPosts(queries.limit)
+    return await this.postService.trendingsPosts(
+      queries.limit ? 5 : queries.limit
+    )
   }
 
   @Get(':postId')
