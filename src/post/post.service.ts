@@ -94,6 +94,9 @@ export class PostService {
     posts: Post[]
   }> {
     const posts = await this.postRespository.find({
+      order: {
+        createdAt: 'DESC',
+      },
       select: this.selectPost,
       relations: this.relationsPost,
     })
@@ -368,6 +371,9 @@ export class PostService {
           id: user.id,
         },
       },
+      order: {
+        createdAt: 'DESC',
+      },
       select: this.selectPost,
       relations: this.relationsPost,
     })
@@ -393,6 +399,9 @@ export class PostService {
         likes: {
           id: user.id,
         },
+      },
+      order: {
+        createdAt: 'DESC',
       },
       select: this.selectPost,
       relations: this.relationsPost,
