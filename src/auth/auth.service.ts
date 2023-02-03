@@ -78,6 +78,7 @@ export class AuthService {
       loginCredentials.password,
       user.password
     )
+
     if (!matchPassword)
       throw new HttpException(
         {
