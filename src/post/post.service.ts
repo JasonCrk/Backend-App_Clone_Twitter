@@ -160,9 +160,10 @@ export class PostService {
     }
 
     let findOptionsPosts: FindManyOptions<Post> = {
-      where: {
-        content: Like(`%${queries.query}%`),
-      },
+      where: [
+        { content: Like(`%${queries.query}%`) },
+        { hashtags: Like(`%${queries.query}%`) },
+      ],
       select: this.selectPost,
       relations: this.relationsPost,
     }
@@ -171,7 +172,7 @@ export class PostService {
       findOptionsPosts = {
         ...findOptionsPosts,
         order: {
-          createdAt: 'ASC',
+          createdAt: 'DESC',
         },
       }
     }
