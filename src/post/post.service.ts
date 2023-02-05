@@ -321,7 +321,9 @@ export class PostService {
         id: postId,
       },
       select: {
-        likes: true,
+        likes: {
+          id: true,
+        },
         id: true,
       },
       relations: {
