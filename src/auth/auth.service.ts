@@ -133,6 +133,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         account: {
+          id: true,
           avatar: true,
         },
       },
