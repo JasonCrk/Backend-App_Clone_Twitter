@@ -132,6 +132,7 @@ export class AccountService {
           followers: {
             id: true,
           },
+          id: true,
           username: true,
           firstName: true,
         },
@@ -153,6 +154,80 @@ export class AccountService {
 
     return {
       accounts: orderAccounts.slice(0, limit),
+    }
+  }
+
+  async followAccount(
+    userId: string,
+    userFollowId: string
+  ): Promise<{ account: Account }> {
+    const account = await this.accountRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+      select: {
+        id: true,
+        followings: {
+          id: true,
+        },
+      },
+      relations: {
+        followings: true,
+      },
+    })
+
+    if (!account)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'El usuario no existe',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const userAccount = await this.accountRepository.findOne({
+      where: {
+        user: {
+          id: userFollowId,
+        },
+      },
+      select: {
+        user: {
+          id: true,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    })
+
+    if (!userAccount.user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'El usuario no existe',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const matchUserFollowingAccount = account.followings.find(
+      accountFollowed => accountFollowed.id === userAccount.user.id
+    )
+
+    if (!matchUserFollowingAccount) {
+      account.followings.push(userAccount.user)
+    } else {
+      account.followings = account.followings.filter(
+        accountFollow => accountFollow.id !== userAccount.user.id
+      )
+    }
+
+    const saveAccount = await this.accountRepository.save(account)
+
+    return {
+      account: saveAccount,
     }
   }
 }
