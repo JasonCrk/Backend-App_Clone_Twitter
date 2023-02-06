@@ -192,6 +192,9 @@ export class PostService {
         hashtags: true,
       },
       take: limit,
+      order: {
+        createdAt: 'DESC',
+      },
     }
 
     const posts = await this.postRespository.find(findPostsOptions)
