@@ -5,6 +5,7 @@ import {
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsSelect,
+  ILike,
   Repository,
 } from 'typeorm'
 
@@ -94,6 +95,49 @@ export class AccountService {
 
     return {
       profile,
+    }
+  }
+
+  async searchAccountsByUsernameOrFirstName(
+    query: string,
+    limit: number
+  ): Promise<{ accounts: Account[] }> {
+    const searchAccounts = await this.accountRepository.find({
+      where: [
+        {
+          user: {
+            username: ILike(`${query}%`),
+          },
+        },
+        {
+          user: {
+            firstName: ILike(`${query}%`),
+          },
+        },
+      ],
+      take: limit,
+      select: {
+        id: true,
+        avatar: true,
+        verify: true,
+        user: {
+          id: true,
+          username: true,
+          firstName: true,
+          followers: {
+            id: true,
+          },
+        },
+      },
+      relations: {
+        user: {
+          followers: true,
+        },
+      },
+    })
+
+    return {
+      accounts: searchAccounts,
     }
   }
 

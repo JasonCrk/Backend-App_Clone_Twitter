@@ -25,6 +25,17 @@ import { followAccountDto } from './dto/followAccountDto.dto'
 export class AccountController {
   constructor(private accountService: AccountService) {}
 
+  @Get('search')
+  async searchAccounts(
+    @Query('query') query: string,
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number
+  ): Promise<{ accounts: Account[] }> {
+    return await this.accountService.searchAccountsByUsernameOrFirstName(
+      query,
+      limit
+    )
+  }
+
   @Get('most_followed')
   async getMostFollowedUsers(
     @Query('limit', new DefaultValuePipe(3), ParseIntPipe) limit: number
