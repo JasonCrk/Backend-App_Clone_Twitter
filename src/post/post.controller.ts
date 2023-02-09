@@ -49,7 +49,7 @@ export class PostController {
 
   @Get('trends')
   async trendsPosts(@Query() queries: trendsQueriesList): Promise<{
-    trends: Array<{ hashtag: string; countTweets: number }>
+    trends: { [hashtag: string]: number }
   }> {
     return await this.postService.trendingsPosts(
       queries.limit ? 5 : queries.limit
