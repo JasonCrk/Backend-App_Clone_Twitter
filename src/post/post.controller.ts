@@ -104,4 +104,11 @@ export class PostController {
   ): Promise<{ posts: PostEntity[] }> {
     return await this.postService.getLikedPostsByUsername(username)
   }
+
+  @Get('user/:username/media')
+  async getMediaPosts(
+    @Param('username') username: string
+  ): Promise<{ posts: PostEntity[] }> {
+    return await this.postService.getMediaPostsByUsername(username)
+  }
 }

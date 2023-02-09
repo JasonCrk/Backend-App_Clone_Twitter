@@ -414,4 +414,39 @@ export class PostService {
       posts,
     }
   }
+
+  async getMediaPostsByUsername(username: string): Promise<{ posts: Post[] }> {
+    const user = await this.usersService.findOneByUsername(username)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'El usuario no existe',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const posts = await this.postRespository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+      select: this.selectPost,
+      relations: this.relationsPost,
+    })
+
+    const postsWithImages: Post[] = []
+
+    posts.forEach(post => {
+      if (post.images.length > 0) postsWithImages.push(post)
+    })
+
+    return {
+      posts: postsWithImages,
+    }
+  }
 }
