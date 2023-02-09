@@ -185,7 +185,7 @@ export class PostService {
   }
 
   async trendingsPosts(limit: number): Promise<{
-    trends: Array<{ hashtag: string; countTweets: number }>
+    trends: { [hashtag: string]: number }
   }> {
     const findPostsOptions: FindManyOptions<Post> = {
       select: {
@@ -199,24 +199,21 @@ export class PostService {
 
     const posts = await this.postRespository.find(findPostsOptions)
 
-    let trendPosts: Array<{ hashtag: string; countTweets: number }> = []
+    const trendPosts: { [hashtag: string]: number } = {}
 
     posts.forEach(post => {
       if (post.hashtags) {
         const hashtags = post.hashtags.split(',')
 
         hashtags.forEach(hashtag => {
-          const indexTrendPost = trendPosts.findIndex(
-            trendPost => trendPost.hashtag === hashtag.trim()
-          )
+          const normalizeHashtag = hashtag.trim()
+          const trendPostExist =
+            Object.keys(trendPosts).includes(normalizeHashtag)
 
-          if (indexTrendPost === -1) {
-            trendPosts = [
-              ...trendPosts,
-              { hashtag: hashtag.trim(), countTweets: 1 },
-            ]
+          if (trendPostExist) {
+            trendPosts[normalizeHashtag]++
           } else {
-            trendPosts[indexTrendPost].countTweets += 1
+            trendPosts[normalizeHashtag] = 1
           }
         })
       }
