@@ -3,6 +3,7 @@ import { Injectable, HttpStatus, HttpException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import {
   FindManyOptions,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsSelect,
   ILike,
@@ -10,6 +11,8 @@ import {
 } from 'typeorm'
 
 import { Account } from './entities/account.entity'
+
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity'
 
 @Injectable()
 export class AccountService {
@@ -34,6 +37,17 @@ export class AccountService {
 
   async createAccount(): Promise<Account> {
     return await this.accountRepository.save({})
+  }
+
+  async findAccountWhere(options: FindOneOptions<Account>): Promise<Account> {
+    return await this.accountRepository.findOne(options)
+  }
+
+  async updateAccount(
+    id: string,
+    accountData: QueryDeepPartialEntity<Account>
+  ): Promise<void> {
+    await this.accountRepository.update({ id }, accountData)
   }
 
   async findAccountsWhere(
@@ -188,10 +202,11 @@ export class AccountService {
       },
     })
 
-    const orderAccounts = accounts.sort((account1, account2) =>
-      account1.user.followers.length < account2.user.followers.length
+    const orderAccounts = accounts.sort((accountBefore, accountAfter) =>
+      accountBefore.user.followers.length < accountAfter.user.followers.length
         ? 1
-        : account1.user.followers.length > account2.user.followers.length
+        : accountBefore.user.followers.length >
+          accountAfter.user.followers.length
         ? -1
         : 0
     )
