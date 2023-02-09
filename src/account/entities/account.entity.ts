@@ -16,13 +16,11 @@ export class Account {
   id: string
 
   @Column({
-    nullable: true,
     default: 'https://pbs.twimg.com/media/FgqBU4yWYAAPZ6-.png',
   })
   avatar: string
 
   @Column({
-    nullable: true,
     default:
       'https://images.wondershare.com/repairit/aticle/2021/08/twitter-header-photo-issues-1.jpg',
   })
