@@ -1,4 +1,5 @@
 import { Express } from 'express'
+
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common'
 
 import { InjectRepository } from '@nestjs/typeorm'
@@ -117,7 +118,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: '',
+          error: 'Tweet does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -235,7 +236,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El usuario no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -258,7 +259,7 @@ export class PostService {
         throw new HttpException(
           {
             status: HttpStatus.NOT_FOUND,
-            error: 'El tweet a mencionar no existe',
+            error: 'Tweet to mention does not exist',
           },
           HttpStatus.NOT_FOUND
         )
@@ -283,7 +284,7 @@ export class PostService {
     await this.postRespository.save(newPost)
 
     return {
-      message: 'Se ha publicado el tweet',
+      message: 'Tweet has been published',
     }
   }
 
@@ -297,7 +298,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'User not exist',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -307,7 +308,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'Tweet not exist',
+          error: 'Tweet does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -334,7 +335,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El usuario no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -358,7 +359,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El tweet no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -386,7 +387,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El usuario no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -415,7 +416,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El usuario no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
@@ -444,7 +445,7 @@ export class PostService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El usuario no existe',
+          error: 'User does not exist',
         },
         HttpStatus.NOT_FOUND
       )
