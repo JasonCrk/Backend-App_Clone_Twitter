@@ -130,6 +130,99 @@ export class PostService {
     return await this.postRespository.findOneBy({ id: postId })
   }
 
+  async getUserPostsByUsername(username: string): Promise<{ posts: Post[] }> {
+    const user = await this.usersService.findOneByUsername(username)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const posts = await this.postRespository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      select: this.selectPost,
+      relations: this.relationsPost,
+    })
+
+    return {
+      posts,
+    }
+  }
+
+  async getLikedPostsByUsername(username: string): Promise<{ posts: Post[] }> {
+    const user = await this.usersService.findOneByUsername(username)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const posts = await this.postRespository.find({
+      where: {
+        likes: {
+          id: user.id,
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      select: this.selectPost,
+      relations: this.relationsPost,
+    })
+
+    return {
+      posts,
+    }
+  }
+
+  async getMediaPostsByUsername(username: string): Promise<{ posts: Post[] }> {
+    const user = await this.usersService.findOneByUsername(username)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const posts = await this.postRespository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+      select: this.selectPost,
+      relations: this.relationsPost,
+    })
+
+    const postsWithImages: Post[] = []
+
+    posts.forEach(post => {
+      if (post.images.length > 0) postsWithImages.push(post)
+    })
+
+    return {
+      posts: postsWithImages,
+    }
+  }
+
   async searchPosts(
     queries: searchQueriesList
   ): Promise<{ data: Post[] | Account[] }> {
@@ -303,7 +396,21 @@ export class PostService {
         HttpStatus.NOT_FOUND
       )
 
-    const post = await this.postRespository.findOneBy({ id: postId })
+    const post = await this.postRespository.findOne({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+        user: {
+          id: true,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    })
+
     if (!post)
       throw new HttpException(
         {
@@ -316,10 +423,10 @@ export class PostService {
     if (post.user.id !== user.id)
       throw new HttpException(
         {
-          status: HttpStatus.NOT_FOUND,
+          status: HttpStatus.UNAUTHORIZED,
           error: 'You are not the owner of the tweet',
         },
-        HttpStatus.NOT_FOUND
+        HttpStatus.UNAUTHORIZED
       )
 
     await this.postRespository.delete({ id: post.id })
@@ -378,99 +485,6 @@ export class PostService {
 
     return {
       post: savePost,
-    }
-  }
-
-  async getUserPostsByUsername(username: string): Promise<{ posts: Post[] }> {
-    const user = await this.usersService.findOneByUsername(username)
-    if (!user)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'User does not exist',
-        },
-        HttpStatus.NOT_FOUND
-      )
-
-    const posts = await this.postRespository.find({
-      where: {
-        user: {
-          id: user.id,
-        },
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      select: this.selectPost,
-      relations: this.relationsPost,
-    })
-
-    return {
-      posts,
-    }
-  }
-
-  async getLikedPostsByUsername(username: string): Promise<{ posts: Post[] }> {
-    const user = await this.usersService.findOneByUsername(username)
-    if (!user)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'User does not exist',
-        },
-        HttpStatus.NOT_FOUND
-      )
-
-    const posts = await this.postRespository.find({
-      where: {
-        likes: {
-          id: user.id,
-        },
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      select: this.selectPost,
-      relations: this.relationsPost,
-    })
-
-    return {
-      posts,
-    }
-  }
-
-  async getMediaPostsByUsername(username: string): Promise<{ posts: Post[] }> {
-    const user = await this.usersService.findOneByUsername(username)
-    if (!user)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'User does not exist',
-        },
-        HttpStatus.NOT_FOUND
-      )
-
-    const posts = await this.postRespository.find({
-      where: {
-        user: {
-          id: user.id,
-        },
-      },
-      order: {
-        createdAt: 'ASC',
-      },
-      select: this.selectPost,
-      relations: this.relationsPost,
-    })
-
-    const postsWithImages: Post[] = []
-
-    posts.forEach(post => {
-      if (post.images.length > 0) postsWithImages.push(post)
-    })
-
-    return {
-      posts: postsWithImages,
     }
   }
 }
