@@ -107,8 +107,9 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Delete(':postId')
   async deletePost(
+    @Request() req: { user: Payload },
     @Param('postId', new ParseUUIDPipe()) postId: string
   ): Promise<{ message: string }> {
-    return await this.postService.deletePost(postId)
+    return await this.postService.deletePost(postId, req.user.userId)
   }
 }

@@ -287,13 +287,36 @@ export class PostService {
     }
   }
 
-  async deletePost(postId: string): Promise<{ message: string }> {
+  async deletePost(
+    postId: string,
+    userId: string
+  ): Promise<{ message: string }> {
+    const user = await this.usersService.findOneById(userId)
+
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
     const post = await this.postRespository.findOneBy({ id: postId })
     if (!post)
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: '',
+          error: 'Tweet not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    if (post.user.id !== user.id)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'You are not the owner of the tweet',
         },
         HttpStatus.NOT_FOUND
       )
@@ -301,7 +324,7 @@ export class PostService {
     await this.postRespository.delete({ id: post.id })
 
     return {
-      message: 'Se ha eliminado el tweet',
+      message: 'Tweet has been deleted',
     }
   }
 
