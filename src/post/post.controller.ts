@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Delete,
+  Patch,
 } from '@nestjs/common'
 
 import { ParseUUIDPipe } from '@nestjs/common/pipes'
@@ -30,6 +31,7 @@ import { createPostDto } from './dto/createPostDto.dto'
 import { likePostDto } from './dto/likePostDto.dto'
 import { searchQueriesList } from './dto/searchQueriesList.ls'
 import { trendsQueriesList } from './dto/trendsQueriesList.ls'
+import { updatePostDto } from './dto/updatePostDto.dto'
 
 @Controller('api/posts')
 export class PostController {
@@ -102,6 +104,16 @@ export class PostController {
     @Body() post: likePostDto
   ): Promise<{ post: PostEntity }> {
     return await this.postService.likePost(req.user.userId, post.postId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':postId')
+  async updatePost(
+    @Param('postId', new ParseUUIDPipe()) postId: string,
+    @Request() req: { user: Payload },
+    @Body() postData: updatePostDto
+  ): Promise<{ message: string }> {
+    return await this.postService.updatePost(req.user.userId, postId, postData)
   }
 
   @UseGuards(JwtAuthGuard)

@@ -22,6 +22,7 @@ import { UsersService } from 'src/users/users.service'
 import { AccountService } from 'src/account/account.service'
 
 import cloudinary from 'src/utils/cloudinary'
+import { updatePostDto } from './dto/updatePostDto.dto'
 
 @Injectable()
 export class PostService {
@@ -378,6 +379,61 @@ export class PostService {
 
     return {
       message: 'Tweet has been published',
+    }
+  }
+
+  async updatePost(
+    userId: string,
+    postId: string,
+    postUpdateData: updatePostDto
+  ): Promise<{ message: string }> {
+    const user = await this.usersService.findOneById(userId)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const post = await this.postRespository.findOne({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+        user: {
+          id: true,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    })
+
+    if (!post)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Tweet does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    if (post.user.id !== user.id)
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'You are not the owner of the tweet',
+        },
+        HttpStatus.UNAUTHORIZED
+      )
+
+    await this.postRespository.update({ id: post.id }, postUpdateData)
+
+    return {
+      message: 'Tweet has been updated',
     }
   }
 
