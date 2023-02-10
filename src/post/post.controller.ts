@@ -56,41 +56,6 @@ export class PostController {
     )
   }
 
-  @Get(':postId')
-  async getPost(
-    @Param('postId', new ParseUUIDPipe()) postId: string
-  ): Promise<{ post: PostEntity }> {
-    return await this.postService.findPostById(postId)
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FilesInterceptor('images'))
-  @Post()
-  async createPost(
-    @Body() postData: createPostDto,
-    @Request() req: { user: Payload },
-    @UploadedFiles() images: Array<Express.Multer.File>
-  ): Promise<{ message: string }> {
-    return await this.postService.createPost(postData, req.user.userId, images)
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':postId')
-  async deletePost(
-    @Param('postId', new ParseUUIDPipe()) postId: string
-  ): Promise<{ message: string }> {
-    return await this.postService.deletePost(postId)
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('like')
-  async likePost(
-    @Request() req: { user: Payload },
-    @Body() post: likePostDto
-  ): Promise<{ post: PostEntity }> {
-    return await this.postService.likePost(req.user.userId, post.postId)
-  }
-
   @Get('user/:username')
   async getUserPosts(
     @Param('username') username: string
@@ -110,5 +75,40 @@ export class PostController {
     @Param('username') username: string
   ): Promise<{ posts: PostEntity[] }> {
     return await this.postService.getMediaPostsByUsername(username)
+  }
+
+  @Get(':postId')
+  async getPost(
+    @Param('postId', new ParseUUIDPipe()) postId: string
+  ): Promise<{ post: PostEntity }> {
+    return await this.postService.findPostById(postId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('images'))
+  @Post()
+  async createPost(
+    @Body() postData: createPostDto,
+    @Request() req: { user: Payload },
+    @UploadedFiles() images: Array<Express.Multer.File>
+  ): Promise<{ message: string }> {
+    return await this.postService.createPost(postData, req.user.userId, images)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('like')
+  async likePost(
+    @Request() req: { user: Payload },
+    @Body() post: likePostDto
+  ): Promise<{ post: PostEntity }> {
+    return await this.postService.likePost(req.user.userId, post.postId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':postId')
+  async deletePost(
+    @Param('postId', new ParseUUIDPipe()) postId: string
+  ): Promise<{ message: string }> {
+    return await this.postService.deletePost(postId)
   }
 }
