@@ -155,11 +155,8 @@ export class AccountService {
     }
   }
 
-  async userFollowers(
-    userId: string,
-    limit: number | undefined
-  ): Promise<{ accounts: Account[] }> {
-    let findAccountsOptions: FindManyOptions<Account> = {
+  async userFollowers(userId: string): Promise<{ accounts: Account[] }> {
+    const findAccountsOptions: FindManyOptions<Account> = {
       where: {
         followings: {
           id: userId,
@@ -167,10 +164,6 @@ export class AccountService {
       },
       select: this.selectAccountItem,
       relations: this.relationsAccountItem,
-    }
-
-    if (limit) {
-      findAccountsOptions = { ...findAccountsOptions, take: limit }
     }
 
     const accounts = await this.accountRepository.find(findAccountsOptions)

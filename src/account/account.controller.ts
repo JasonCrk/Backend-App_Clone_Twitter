@@ -64,9 +64,8 @@ export class AccountController {
 
   @Get(':userId/followers')
   async getUserFollowers(
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Query('limit', ParseIntPipe) limit: number
+    @Param('userId', new ParseUUIDPipe()) userId: string
   ): Promise<{ accounts: Account[] }> {
-    return await this.accountService.userFollowers(userId, limit)
+    return await this.accountService.userFollowers(userId)
   }
 }
