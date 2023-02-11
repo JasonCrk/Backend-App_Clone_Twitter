@@ -62,10 +62,10 @@ export class AccountController {
     return await this.accountService.getAccountByUsername(username)
   }
 
-  @Get(':userId/followers')
+  @Get(':username/followers')
   async getUserFollowers(
-    @Param('userId', new ParseUUIDPipe()) userId: string
+    @Param('username', new ParseUUIDPipe()) username: string
   ): Promise<{ accounts: Account[] }> {
-    return await this.accountService.userFollowers(userId)
+    return await this.accountService.userFollowers(username)
   }
 }

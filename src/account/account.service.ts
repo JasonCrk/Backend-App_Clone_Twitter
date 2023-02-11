@@ -155,11 +155,11 @@ export class AccountService {
     }
   }
 
-  async userFollowers(userId: string): Promise<{ accounts: Account[] }> {
+  async userFollowers(username: string): Promise<{ accounts: Account[] }> {
     const findAccountsOptions: FindManyOptions<Account> = {
       where: {
         followings: {
-          id: userId,
+          username,
         },
       },
       select: this.selectAccountItem,
