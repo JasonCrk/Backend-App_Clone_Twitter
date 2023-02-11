@@ -173,6 +173,28 @@ export class AccountService {
     }
   }
 
+  async userFollowings(username: string): Promise<{ accounts: Account[] }> {
+    const findAccountsOptions: FindManyOptions<Account> = {
+      where: {
+        user: {
+          followers: {
+            user: {
+              username,
+            },
+          },
+        },
+      },
+      select: this.selectAccountItem,
+      relations: this.relationsAccountItem,
+    }
+
+    const accounts = await this.accountRepository.find(findAccountsOptions)
+
+    return {
+      accounts,
+    }
+  }
+
   async mostFollowedUsers(limit: number): Promise<{ accounts: Account[] }> {
     const accounts = await this.accountRepository.find({
       select: {
