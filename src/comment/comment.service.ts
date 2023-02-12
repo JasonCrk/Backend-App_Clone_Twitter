@@ -93,7 +93,7 @@ export class CommentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: '',
+          error: 'Tweet does not exist',
         },
         HttpStatus.NOT_FOUND
       )
