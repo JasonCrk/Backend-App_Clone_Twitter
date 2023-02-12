@@ -29,6 +29,13 @@ import { createCommentDto } from './dto/createComment.dto'
 export class CommentController {
   constructor(private commentService: CommentService) {}
 
+  @Get(':commentId')
+  async getCommentById(
+    @Param('commentId', new ParseUUIDPipe()) commentId: string
+  ): Promise<{ comment: Comment }> {
+    return await this.commentService.findCommentById(commentId)
+  }
+
   @Get('tweet/:tweetId')
   async tweetComments(
     @Param('tweetId', new ParseUUIDPipe()) tweetId: string

@@ -17,6 +17,41 @@ import { createCommentDto } from './dto/createComment.dto'
 
 @Injectable()
 export class CommentService {
+  private readonly commentSelectOptionsBase = {
+    id: true,
+    content: true,
+    images: {
+      id: true,
+      imageUrl: true,
+    },
+    likes: {
+      id: true,
+    },
+    comments: {
+      id: true,
+    },
+    user: {
+      id: true,
+      firstName: true,
+      username: true,
+      account: {
+        id: true,
+        avatar: true,
+        verify: true,
+      },
+    },
+    createdAt: true,
+  }
+
+  private readonly commentRelationsOptionsBase = {
+    images: true,
+    likes: true,
+    comments: true,
+    user: {
+      account: true,
+    },
+  }
+
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
@@ -25,6 +60,32 @@ export class CommentService {
     private postService: PostService,
     private usersService: UsersService
   ) {}
+
+  async findCommentById(commentId: string): Promise<{ comment: Comment }> {
+    const comment = await this.commentRepository.findOne({
+      where: {
+        id: commentId,
+      },
+      select: {
+        ...this.commentSelectOptionsBase,
+        comment: {
+          user: {
+            username: true,
+          },
+        },
+      },
+      relations: {
+        ...this.commentRelationsOptionsBase,
+        comment: {
+          user: true,
+        },
+      },
+    })
+
+    return {
+      comment,
+    }
+  }
 
   async findCommentsByPostId(postId: string): Promise<{ comments: Comment[] }> {
     const post = await this.postService.findOneById(postId)
@@ -44,44 +105,17 @@ export class CommentService {
         },
       },
       select: {
-        id: true,
-        content: true,
-        images: {
-          id: true,
-          imageUrl: true,
-        },
-        likes: {
-          id: true,
-        },
-        comments: {
-          id: true,
-        },
+        ...this.commentSelectOptionsBase,
         post: {
           user: {
             username: true,
           },
         },
-        user: {
-          id: true,
-          firstName: true,
-          username: true,
-          account: {
-            id: true,
-            avatar: true,
-            verify: true,
-          },
-        },
-        createdAt: true,
       },
       relations: {
-        images: true,
-        likes: true,
-        comments: true,
+        ...this.commentRelationsOptionsBase,
         post: {
           user: true,
-        },
-        user: {
-          account: true,
         },
       },
     })
