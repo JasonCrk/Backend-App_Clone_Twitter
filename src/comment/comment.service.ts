@@ -26,6 +26,71 @@ export class CommentService {
     private usersService: UsersService
   ) {}
 
+  async findCommentsByPostId(postId: string): Promise<{ comments: Comment[] }> {
+    const post = await this.postService.findOneById(postId)
+    if (!post)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: '',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const comments = await this.commentRepository.find({
+      where: {
+        post: {
+          id: post.id,
+        },
+      },
+      select: {
+        id: true,
+        content: true,
+        images: {
+          id: true,
+          imageUrl: true,
+        },
+        likes: {
+          id: true,
+        },
+        comments: {
+          id: true,
+        },
+        post: {
+          user: {
+            username: true,
+          },
+        },
+        user: {
+          id: true,
+          firstName: true,
+          username: true,
+          account: {
+            id: true,
+            avatar: true,
+            verify: true,
+          },
+        },
+        createdAt: true,
+      },
+      relations: {
+        images: true,
+        likes: true,
+        comments: true,
+        post: {
+          user: true,
+        },
+        user: {
+          account: true,
+        },
+      },
+    })
+
+    return {
+      comments,
+    }
+  }
+
   async createComment(
     commentData: createCommentDto,
     userId: string,

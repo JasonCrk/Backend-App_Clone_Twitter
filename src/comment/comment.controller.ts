@@ -3,6 +3,7 @@ import { Express } from 'express'
 import {
   Controller,
   Post,
+  Get,
   UseGuards,
   UseInterceptors,
   Body,
@@ -27,6 +28,13 @@ import { createCommentDto } from './dto/createComment.dto'
 @Controller('api/comments')
 export class CommentController {
   constructor(private commentService: CommentService) {}
+
+  @Get(':tweetId')
+  async tweetComments(
+    @Param('tweetId', new ParseUUIDPipe()) tweetId: string
+  ): Promise<{ comments: Comment[] }> {
+    return await this.commentService.findCommentsByPostId(tweetId)
+  }
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('images'))
