@@ -8,7 +8,6 @@ import {
   Request,
   DefaultValuePipe,
   ParseIntPipe,
-  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common'
 
@@ -64,14 +63,14 @@ export class AccountController {
 
   @Get(':username/followers')
   async getUserFollowers(
-    @Param('username', new ParseUUIDPipe()) username: string
+    @Param('username') username: string
   ): Promise<{ accounts: Account[] }> {
     return await this.accountService.userFollowers(username)
   }
 
   @Get(':username/followings')
   async getUserFollowings(
-    @Param('username', new ParseUUIDPipe()) username: string
+    @Param('username') username: string
   ): Promise<{ accounts: Account[] }> {
     return await this.accountService.userFollowings(username)
   }
