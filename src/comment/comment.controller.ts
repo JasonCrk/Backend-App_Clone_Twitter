@@ -36,11 +36,11 @@ export class CommentController {
     return await this.commentService.findCommentById(commentId)
   }
 
-  @Get('tweet/:tweetId')
+  @Get('post/:postId')
   async tweetComments(
-    @Param('tweetId', new ParseUUIDPipe()) tweetId: string
+    @Param('postId', new ParseUUIDPipe()) postId: string
   ): Promise<{ comments: Comment[] }> {
-    return await this.commentService.findCommentsByPostId(tweetId)
+    return await this.commentService.findCommentsByPostId(postId)
   }
 
   @UseGuards(JwtAuthGuard)
