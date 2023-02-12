@@ -22,18 +22,26 @@ export class Comment {
   @Column()
   content: string
 
+  @OneToMany(() => ImageComment, image => image.comment)
+  images: ImageComment[]
+
   @ManyToOne(() => User, user => user.comments)
   user: User
 
   @ManyToOne(() => Post, post => post.comments)
   post: Post
 
+  @ManyToOne(() => Comment, comment => comment.comments, {
+    nullable: true,
+  })
+  comment: Comment
+
+  @OneToMany(() => Comment, comment => comment.comment)
+  comments: Comment[]
+
   @ManyToMany(() => User, user => user.commentsLiked)
   @JoinTable()
   likes: User[]
-
-  @OneToMany(() => ImageComment, image => image.comment)
-  images: ImageComment[]
 
   @CreateDateColumn()
   createdAt: Date
