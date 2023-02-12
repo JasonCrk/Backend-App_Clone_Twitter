@@ -21,6 +21,9 @@ export class AccountService {
     avatar: true,
     verify: true,
     user: {
+      followers: {
+        id: true,
+      },
       username: true,
       firstName: true,
     },
@@ -162,8 +165,25 @@ export class AccountService {
           username,
         },
       },
-      select: this.selectAccountItem,
-      relations: this.relationsAccountItem,
+      select: {
+        id: true,
+        avatar: true,
+        verify: true,
+        bibliography: true,
+        user: {
+          id: true,
+          username: true,
+          firstName: true,
+          followers: {
+            id: true,
+          },
+        },
+      },
+      relations: {
+        user: {
+          followers: true,
+        },
+      },
     }
 
     const accounts = await this.accountRepository.find(findAccountsOptions)
@@ -184,8 +204,25 @@ export class AccountService {
           },
         },
       },
-      select: this.selectAccountItem,
-      relations: this.relationsAccountItem,
+      select: {
+        id: true,
+        avatar: true,
+        verify: true,
+        bibliography: true,
+        user: {
+          id: true,
+          username: true,
+          firstName: true,
+          followers: {
+            id: true,
+          },
+        },
+      },
+      relations: {
+        user: {
+          followers: true,
+        },
+      },
     }
 
     const accounts = await this.accountRepository.find(findAccountsOptions)
