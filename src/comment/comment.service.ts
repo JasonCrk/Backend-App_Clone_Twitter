@@ -3,7 +3,7 @@ import { Express } from 'express'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindOptionsRelations, FindOptionsSelect, Repository } from 'typeorm'
 
 import { Comment } from './entities/comment.entity'
 import { ImageComment } from './entities/imageComment.entity'
@@ -17,7 +17,7 @@ import { createCommentDto } from './dto/createComment.dto'
 
 @Injectable()
 export class CommentService {
-  private readonly commentSelectOptionsBase = {
+  private readonly commentSelectOptionsBase: FindOptionsSelect<Comment> = {
     id: true,
     content: true,
     images: {
@@ -43,14 +43,15 @@ export class CommentService {
     createdAt: true,
   }
 
-  private readonly commentRelationsOptionsBase = {
-    images: true,
-    likes: true,
-    comments: true,
-    user: {
-      account: true,
-    },
-  }
+  private readonly commentRelationsOptionsBase: FindOptionsRelations<Comment> =
+    {
+      images: true,
+      likes: true,
+      comments: true,
+      user: {
+        account: true,
+      },
+    }
 
   constructor(
     @InjectRepository(Comment)
