@@ -9,5 +9,5 @@ export class createPostDto {
   hashtags: string
 
   @IsOptional()
-  mentionPost: string
+  mention: string
 }

@@ -340,13 +340,11 @@ export class PostService {
     newPost.content = postData.content
     newPost.user = user
 
-    if (postData.hashtags) {
-      newPost.hashtags = postData.hashtags
-    }
+    if (postData.hashtags) newPost.hashtags = postData.hashtags
 
-    if (postData.mentionPost) {
+    if (postData.mention) {
       const mentionPost = await this.postRespository.findOneBy({
-        id: postData.mentionPost,
+        id: postData.mention,
       })
 
       if (!mentionPost)
