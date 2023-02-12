@@ -10,6 +10,7 @@ import {
   Param,
   UploadedFiles,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common'
 
 import { FilesInterceptor } from '@nestjs/platform-express'
@@ -45,7 +46,7 @@ export class CommentController {
   @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
   async deleteComment(
-    @Param('commentId') commentId: string
+    @Param('commentId', new ParseUUIDPipe()) commentId: string
   ): Promise<{ message: string }> {
     return await this.commentService.deleteComment(commentId)
   }
