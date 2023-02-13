@@ -137,6 +137,47 @@ export class CommentService {
     }
   }
 
+  async findCommentsByCommentId(
+    commentId: string
+  ): Promise<{ comments: Comment[] }> {
+    const comment = await this.commentRepository.findOneBy({ id: commentId })
+    if (!comment)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Comment does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const comments = await this.commentRepository.find({
+      where: {
+        comment: {
+          id: comment.id,
+        },
+      },
+      select: {
+        ...this.commentSelectOptionsBase,
+        comment: {
+          id: true,
+          user: {
+            username: true,
+          },
+        },
+      },
+      relations: {
+        ...this.commentRelationsOptionsBase,
+        comment: {
+          user: true,
+        },
+      },
+    })
+
+    return {
+      comments,
+    }
+  }
+
   async createComment(
     commentData: createCommentDto,
     userId: string,

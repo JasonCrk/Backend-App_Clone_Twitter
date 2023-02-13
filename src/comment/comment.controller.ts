@@ -43,6 +43,13 @@ export class CommentController {
     return await this.commentService.findCommentsByPostId(postId)
   }
 
+  @Get('comment/:commentId')
+  async commentComments(
+    @Param('commentId', new ParseUUIDPipe()) commentId: string
+  ): Promise<{ comments: Comment[] }> {
+    return await this.commentService.findCommentsByCommentId(commentId)
+  }
+
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('images'))
   @Post()
