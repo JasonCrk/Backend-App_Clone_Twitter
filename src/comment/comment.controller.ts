@@ -24,6 +24,7 @@ import { CommentService } from './comment.service'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.strategy'
 
 import { createCommentDto } from './dto/createComment.dto'
+import { likeCommentDto } from './dto/likeCommentDto.dto'
 
 @Controller('api/comments')
 export class CommentController {
@@ -62,6 +63,18 @@ export class CommentController {
       commentData,
       req.user.userId,
       images
+    )
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('like')
+  async likeComment(
+    @Body() comment: likeCommentDto,
+    @Request() req: { user: Payload }
+  ): Promise<{ comment: Comment }> {
+    return await this.commentService.likeComment(
+      req.user.userId,
+      comment.commentId
     )
   }
 

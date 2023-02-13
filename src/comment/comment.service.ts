@@ -298,7 +298,62 @@ export class CommentService {
     await this.commentRepository.delete({ id: comment.id })
 
     return {
-      message: 'Se ha eliminado correctamente el comentario',
+      message: 'Comment has been deleted',
+    }
+  }
+
+  async likeComment(
+    userId: string,
+    commentId: string
+  ): Promise<{ comment: Comment }> {
+    const user = await this.usersService.findOneById(userId)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const comment = await this.commentRepository.findOne({
+      where: {
+        id: commentId,
+      },
+      select: {
+        id: true,
+        likes: {
+          id: true,
+        },
+      },
+      relations: {
+        likes: true,
+      },
+    })
+
+    if (!comment)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const matchUserLikedComment = comment.likes.find(
+      userLike => userLike.id === user.id
+    )
+
+    if (!matchUserLikedComment) {
+      comment.likes.push(user)
+    } else {
+      comment.likes = comment.likes.filter(likeUser => likeUser.id !== user.id)
+    }
+
+    const saveComment = await this.commentRepository.save(comment)
+
+    return {
+      comment: saveComment,
     }
   }
 }
