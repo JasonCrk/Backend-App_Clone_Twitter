@@ -75,10 +75,19 @@ export class CommentService {
             username: true,
           },
         },
+        post: {
+          id: true,
+          user: {
+            username: true,
+          },
+        },
       },
       relations: {
         ...this.commentRelationsOptionsBase,
         comment: {
+          user: true,
+        },
+        post: {
           user: true,
         },
       },
