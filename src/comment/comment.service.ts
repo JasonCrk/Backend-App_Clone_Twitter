@@ -248,15 +248,51 @@ export class CommentService {
     }
   }
 
-  async deleteComment(commentId: string): Promise<{ message: string }> {
-    const comment = await this.commentRepository.findOneBy({ id: commentId })
+  async deleteComment(
+    commentId: string,
+    userId: string
+  ): Promise<{ message: string }> {
+    const user = await this.usersService.findOneById(userId)
+    if (!user)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User does not exist',
+        },
+        HttpStatus.NOT_FOUND
+      )
+
+    const comment = await this.commentRepository.findOne({
+      where: {
+        id: commentId,
+      },
+      select: {
+        id: true,
+        user: {
+          id: true,
+        },
+      },
+      relations: {
+        user: true,
+      },
+    })
+
     if (!comment)
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'El comentario no existe',
+          error: 'Comment does not exist',
         },
         HttpStatus.NOT_FOUND
+      )
+
+    if (comment.user.id !== user.id)
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'You are not the owner of the comment',
+        },
+        HttpStatus.UNAUTHORIZED
       )
 
     await this.commentRepository.delete({ id: comment.id })

@@ -68,8 +68,9 @@ export class CommentController {
   @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
   async deleteComment(
-    @Param('commentId', new ParseUUIDPipe()) commentId: string
+    @Param('commentId', new ParseUUIDPipe()) commentId: string,
+    @Request() req: { user: Payload }
   ): Promise<{ message: string }> {
-    return await this.commentService.deleteComment(commentId)
+    return await this.commentService.deleteComment(commentId, req.user.userId)
   }
 }
