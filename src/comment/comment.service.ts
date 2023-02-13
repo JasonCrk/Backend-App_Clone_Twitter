@@ -70,6 +70,7 @@ export class CommentService {
       select: {
         ...this.commentSelectOptionsBase,
         comment: {
+          id: true,
           user: {
             username: true,
           },
@@ -108,6 +109,7 @@ export class CommentService {
       select: {
         ...this.commentSelectOptionsBase,
         post: {
+          id: true,
           user: {
             username: true,
           },
