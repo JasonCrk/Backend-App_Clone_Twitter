@@ -194,19 +194,36 @@ export class CommentService {
         HttpStatus.NOT_FOUND
       )
 
-    const post = await this.postService.findOneById(commentData.postId)
-    if (!post)
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'El tweet no existe',
-        },
-        HttpStatus.NOT_FOUND
-      )
-
     const newComment = new Comment()
 
-    newComment.post = post
+    if (commentData.postId) {
+      const post = await this.postService.findOneById(commentData.postId)
+      if (!post)
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Tweet does not exist',
+          },
+          HttpStatus.NOT_FOUND
+        )
+
+      newComment.post = post
+    } else {
+      const comment = await this.commentRepository.findOneBy({
+        id: commentData.commentId,
+      })
+      if (!comment)
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Comment does not exist',
+          },
+          HttpStatus.NOT_FOUND
+        )
+
+      newComment.comment = comment
+    }
+
     newComment.user = user
     newComment.content = commentData.content
 
