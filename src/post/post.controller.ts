@@ -11,11 +11,12 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  ParseUUIDPipe,
+  DefaultValuePipe,
   Delete,
   Patch,
+  ParseIntPipe,
 } from '@nestjs/common'
-
-import { ParseUUIDPipe } from '@nestjs/common/pipes'
 
 import { FilesInterceptor } from '@nestjs/platform-express'
 
@@ -30,7 +31,6 @@ import { Account } from 'src/account/entities/account.entity'
 import { createPostDto } from './dto/createPostDto.dto'
 import { likePostDto } from './dto/likePostDto.dto'
 import { searchQueriesList } from './dto/searchQueriesList.ls'
-import { trendsQueriesList } from './dto/trendsQueriesList.ls'
 import { updatePostDto } from './dto/updatePostDto.dto'
 
 @Controller('api/posts')
@@ -50,12 +50,12 @@ export class PostController {
   }
 
   @Get('trends')
-  async trendsPosts(@Query() queries: trendsQueriesList): Promise<{
+  async trendsPosts(
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number
+  ): Promise<{
     trends: { [hashtag: string]: number }
   }> {
-    return await this.postService.trendingsPosts(
-      queries.limit ? 5 : queries.limit
-    )
+    return await this.postService.trendingsPosts(limit)
   }
 
   @Get('user/:username')
