@@ -30,18 +30,22 @@ export class Comment {
 
   @ManyToOne(() => Post, post => post.comments, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   post: Post
 
   @ManyToOne(() => Comment, comment => comment.comments, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   comment: Comment
 
   @OneToMany(() => Comment, comment => comment.comment)
   comments: Comment[]
 
-  @ManyToMany(() => User, user => user.commentsLiked)
+  @ManyToMany(() => User, user => user.commentsLiked, {
+    cascade: true,
+  })
   @JoinTable()
   likes: User[]
 
