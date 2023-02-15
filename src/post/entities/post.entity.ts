@@ -32,6 +32,7 @@ export class Post {
 
   @ManyToOne(() => Post, post => post.postMentions, {
     nullable: true,
+    onDelete: 'SET NULL'
   })
   mention: Post
 
@@ -41,7 +42,9 @@ export class Post {
   @OneToMany(() => ImagePost, image => image.post)
   images: ImagePost[]
 
-  @ManyToMany(() => User, user => user.postsLiked)
+  @ManyToMany(() => User, user => user.postsLiked, {
+    cascade: true,
+  })
   @JoinTable()
   likes: User[]
 
