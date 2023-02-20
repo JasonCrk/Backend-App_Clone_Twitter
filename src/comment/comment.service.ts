@@ -60,7 +60,7 @@ export class CommentService {
     private imageCommentRepository: Repository<ImageComment>,
     private postService: PostService,
     private usersService: UsersService
-  ) {}
+  ) { }
 
   async findCommentById(commentId: string): Promise<{ comment: Comment }> {
     const comment = await this.commentRepository.findOne({
@@ -160,6 +160,12 @@ export class CommentService {
         ...this.commentSelectOptionsBase,
         comment: {
           id: true,
+          post: {
+            id: true
+          },
+          comment: {
+            id: true
+          },
           user: {
             username: true,
           },
@@ -169,6 +175,8 @@ export class CommentService {
         ...this.commentRelationsOptionsBase,
         comment: {
           user: true,
+          post: true,
+          comment: true
         },
       },
     })
