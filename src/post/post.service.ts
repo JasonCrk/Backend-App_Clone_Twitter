@@ -90,7 +90,7 @@ export class PostService {
     private imagePostRepository: Repository<ImagePost>,
     private accountService: AccountService,
     private usersService: UsersService
-  ) {}
+  ) { }
 
   async findAllPosts(): Promise<{
     posts: Post[]
@@ -294,7 +294,7 @@ export class PostService {
 
     const posts = await this.postRespository.find(findPostsOptions)
 
-    const trendPosts: { [hashtag: string]: number } = {}
+    const trendPostsNoSorted: { [hashtag: string]: number } = {}
 
     posts.forEach(post => {
       if (post.hashtags) {
@@ -303,15 +303,29 @@ export class PostService {
         hashtags.forEach(hashtag => {
           const normalizeHashtag = hashtag.trim()
           const trendPostExist =
-            Object.keys(trendPosts).includes(normalizeHashtag)
+            Object.keys(trendPostsNoSorted).includes(normalizeHashtag)
 
           if (trendPostExist) {
-            trendPosts[normalizeHashtag]++
+            trendPostsNoSorted[normalizeHashtag]++
           } else {
-            trendPosts[normalizeHashtag] = 1
+            trendPostsNoSorted[normalizeHashtag] = 1
           }
         })
       }
+    })
+
+    const trendPostsSort: any[][] = [['Juega', 3]]
+
+    for (const hashtag in trendPostsNoSorted) {
+      trendPostsSort.push([hashtag, trendPostsNoSorted[hashtag]])
+    }
+
+    trendPostsSort.sort((beforeTrend, afterTrend) => beforeTrend[1] - afterTrend[1])
+
+    const trendPosts: { [hashtag: string]: number } = {}
+
+    trendPostsSort.reverse().forEach(trend => {
+      trendPosts[trend[0]] = trend[1]
     })
 
     return {
