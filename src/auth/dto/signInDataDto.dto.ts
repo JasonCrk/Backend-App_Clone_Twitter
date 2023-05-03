@@ -1,6 +1,4 @@
-import { IsEmail, IsNotEmpty, Matches } from 'class-validator'
-
-import { PASSWORD_RULE } from '../auth.utils'
+import { IsEmail, IsNotEmpty } from 'class-validator'
 
 export class signInDataDto {
   @IsNotEmpty()
@@ -8,6 +6,5 @@ export class signInDataDto {
   email: string
 
   @IsNotEmpty()
-  @Matches(PASSWORD_RULE)
   password: string
 }
