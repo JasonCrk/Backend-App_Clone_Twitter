@@ -314,7 +314,7 @@ export class PostService {
       }
     })
 
-    const trendPostsSort: any[][] = [['Juega', 3]]
+    const trendPostsSort: any[][] = []
 
     for (const hashtag in trendPostsNoSorted) {
       trendPostsSort.push([hashtag, trendPostsNoSorted[hashtag]])
